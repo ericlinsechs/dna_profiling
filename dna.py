@@ -9,7 +9,12 @@ def main():
         print("Usage: python3 dna.py database sequence")
         sys.exit(1)
 
-    # TODO: Read database file into a variable
+    # Read database file into a list
+    databases = []
+    with open(sys.argv[1]) as f:
+        reader = csv.DictReader(f)
+        for STR in reader:
+            databases.append(STR)
     
     # TODO: Read DNA sequence file into a variable
 
