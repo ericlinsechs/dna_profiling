@@ -22,9 +22,19 @@ def main():
         reader = csv.reader(f)
         for row in reader:
             seq = row[0]
-    print(seq)
 
-    # TODO: Find longest match of each STR in DNA sequence
+    # Read STR into a list
+    sub_seq =[]
+    with open(sys.argv[1]) as f:
+        reader = csv.reader(f)
+        sub_seq = next(reader, None)
+        sub_seq = sub_seq[1:] # omit 'name'
+
+    # Find longest match of each STR in DNA sequence
+    counts = {}
+    for i in range(len(sub_seq)):
+        longest_run = longest_match(seq, sub_seq[i])
+        counts[sub_seq[i]] = longest_run
 
     # TODO: Check database for matching profiles
 
