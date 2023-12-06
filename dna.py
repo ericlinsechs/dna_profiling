@@ -36,7 +36,15 @@ def main():
         longest_run = longest_match(seq, sub_seq[i])
         counts[sub_seq[i]] = longest_run
 
-    # TODO: Check database for matching profiles
+    # Check database for matching profiles
+    for profile in databases:
+        name = profile['name']
+
+        # Check if all key-value pairs match
+        if all(int(profile[key]) == counts.get(key, -1) for key in profile if key != 'name'):
+            print(f"{name}")
+            return
+    print("No match")
 
     return
 
