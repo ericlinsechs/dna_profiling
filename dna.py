@@ -3,50 +3,60 @@ import sys
 
 
 def main():
-
     # Check for command-line usage
     if len(sys.argv) != 3:
         print("Usage: python3 dna.py database sequence")
         sys.exit(1)
 
-    # Read database file into a list
-    databases = []
-    with open(sys.argv[1]) as f:
-        reader = csv.DictReader(f)
-        for STR in reader:
-            databases.append(STR)
+    # Read database file into a list of dictionaries
+    databases = read_csv_file(sys.argv[1])
     
     # Read DNA sequence file into a variable
-    seq = ""
-    with open(sys.argv[2]) as f:
-        reader = csv.reader(f)
-        for row in reader:
-            seq = row[0]
+    seq = read_sequence_file(sys.argv[2])
 
     # Read STR into a list
-    sub_seq =[]
-    with open(sys.argv[1]) as f:
-        reader = csv.reader(f)
-        sub_seq = next(reader, None)
-        sub_seq = sub_seq[1:] # omit 'name'
+    sub_seq = read_str_sequence(sys.argv[1])
 
     # Find longest match of each STR in DNA sequence
     counts = {}
-    for i in range(len(sub_seq)):
-        longest_run = longest_match(seq, sub_seq[i])
-        counts[sub_seq[i]] = longest_run
+    for STR in sub_seq:
+        counts[STR] = longest_match(seq, STR)
 
     # Check database for matching profiles
     for profile in databases:
-        name = profile['name']
+        name = profile["name"]
 
         # Check if all key-value pairs match
-        if all(int(profile[key]) == counts.get(key, -1) for key in profile if key != 'name'):
+        if all(
+            int(profile[key]) == counts.get(key, -1) for key in profile if key != "name"
+        ):
             print(f"{name}")
             return
+
     print("No match")
 
     return
+
+
+def read_csv_file(file_path):
+    """Reads a CSV file and returns a list of dictionaries."""
+    with open(file_path) as f:
+        reader = csv.DictReader(f)
+        return list(reader)
+
+
+def read_sequence_file(file_path):
+    """Reads a DNA sequence file and returns the sequence."""
+    with open(file_path) as f:
+        reader = csv.reader(f)
+        return next(reader, [""])[0]
+
+
+def read_str_sequence(file_path):
+    """Reads a CSV file and returns the list of STR sequences."""
+    with open(file_path) as f:
+        reader = csv.reader(f)
+        return next(reader, [])[1:] # omit 'name'
 
 
 def longest_match(sequence, subsequence):
@@ -59,7 +69,6 @@ def longest_match(sequence, subsequence):
 
     # Check each character in sequence for most consecutive runs of subsequence
     for i in range(sequence_length):
-
         # Initialize count of consecutive runs
         count = 0
 
@@ -67,7 +76,6 @@ def longest_match(sequence, subsequence):
         # If a match, move substring to next potential match in sequence
         # Continue moving substring and checking for matches until out of consecutive matches
         while True:
-
             # Adjust substring start and end
             start = i + count * subsequence_length
             end = start + subsequence_length
